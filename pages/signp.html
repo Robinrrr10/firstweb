@@ -1,0 +1,11 @@
+{% extends 'mypage3.html' %}
+{% block content %}
+<h4>Addition operation</h4>
+<form action="verify" method="POST">
+	{% csrf_token %}
+	Email:<input type="text" name="email"/><br/>
+	Password:<input type="password" name="password"/><br/>
+	<input type="submit" value="SignIn"/>
+</form>
+
+{% endblock %}
