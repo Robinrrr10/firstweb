@@ -22,6 +22,7 @@ urlpatterns = [
     path('', include('calc.urls')),
     path('swp', include('swebap.urls')),
     path('admin/', admin.site.urls),
+    path('accounts/', include('login.urls'))
 ]
 
 urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

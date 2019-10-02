@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Register user</title>
+</head>
+
+<body bgcolor="orange">
+	<form action="/accounts/register/" method="POST">
+		{% csrf_token %}
+		Enter username: <input type="text" name="user_name" placeholder="user name"/><br/>
+		Enter first name: <input type="text" name="first_name" placeholder="first name"/><br/>
+		Enter last name: <input type="text" name="last_name" placeholder="last name"/><br/>
+		Enter Email Id: <input type="email" name="email_id" placeholder="emailId"/><br/>
+		Enter Password: <input type="password" name="pass" /><br/>
+		Enter confirm password: <input type="password" name="confirmpass" /><br/>
+		
+		<input type="submit" value="Register" /><br/>
+	</form>
+	<div>
+		{% for message in messages %}
+			<h4>{{message}}</h4>	
+		{% endfor %}
+	</div>
+</body>
+
+</html>

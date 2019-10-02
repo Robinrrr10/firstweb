@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Signin</title>
+</head>
+
+<body bgcolor="blue">
+	<form action="/accounts/sign/" method="POST">
+		{% csrf_token %}
+		Enter User name: <input type="textt" name="user_name" placeholder="username"/><br/>
+		Enter Password: <input type="password" name="pass" /><br/>
+		<input type="submit" value="SignIn" /><br/>
+	</form>
+	<div>
+		{% for message in messages %}
+			<h4>{{message}}</h4>	
+		{% endfor %}
+	</div>
+</body>
+
+
+</html>

@@ -26,11 +26,14 @@ function clearText(field)
         
         <ul id="templatemo_menu">
             <li><a href="#" class="current"><span></span>Home</a></li>
-            <li><a href="http://www.templatemo.com/page/1" target="_blank"><span></span>CSS</a></li>
-			<li><a href="http://www.flashmo.com/page/1" target="_blank"><span></span>Flash</a></li>    
-            <li><a href="http://www.koflash.com" target="_blank"><span></span>Gallery</a></li>
-            <li><a href="#"><span></span>About</a></li>        
-            <li><a href="#"><span></span>Contact</a></li>
+            {% if user.is_authenticated %}
+            <li><a href="#" target="_blank"><span></span>Hello {{ user.first_name }}</a></li>
+            <li><a href="accounts/signout" target="_blank"><span></span>Logout</a></li>
+            {% else %}
+            <li><a href="accounts/register" target="_blank"><span></span>Register</a></li>
+			<li><a href="accounts/sign" target="_blank"><span></span>Login</a></li>    
+            {% endif %}
+    
         </ul>
         
         <div id="search_box">

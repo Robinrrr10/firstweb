@@ -1,0 +1,719 @@
+Django notes
+------------
+
+
+Prerequest
+----------
+python should be already installed. (version more than 3)
+
+in terminal give below command
+python --version               //If you not get the version after install add environment path
+
+pip should be already installed
+
+pip --version      or 
+
+pip3 --version
+
+
+-----------------------------
+
+To install virtual environment and to create virtual environment
+---------------------------------
+
+To have different django we can have virtual enviroment. so that django will be install inside that virtual environment
+
+
+Open terminal
+
+sudo pip3 install virtualenv       //To install virtual environment
+
+
+virtualenv virtual_enviroment_name    //This is to create virtual environment   
+
+Eg: virtualenv   myvir    //This is to create virtual environment. We can also create by command:    virtualenv -p /usr/bin/python2.7 myvir
+
+source virtual_enviroment_name/bin/activate          //This is to activate virtual that virtual environment and to move into that virtual environment
+Eg: source myvir/bin/activate                 
+
+
+
+------------------------------
+
+To install django              //Go inside virtual environment and then install django
+-------------------
+pip3 install Django
+
+django-admin --version    //To check django version
+
+
+------------------------
+
+To create new project
+--------------------
+
+django-admin startproject project_name   //To create django application
+
+
+python manage.py startapp sub_project_name  //To create sub app inside main application
+
+------------------------
+
+To run the application
+----------------------
+
+python manage.py runserver      //To the run application
+
+default running url is:
+http://127.0.0.1:8000
+
+-------------------------
+
+To add any lib in all project 
+-----------------------------
+Open eclipse -> windows -> preferences -> pydev -> interpreters -> python interpreter
+Click on libraries
+
+Click the new folder and select the path
+
+Then apply and close
+
+--------------------------
+
+models.py
+This should contains class which connect with database or which will handle data
+
+views.py
+This should methods which will control request and response
+
+--------------------------
+
+The adding urls
+---------------
+In project, under same project name there will be urls.py. Open that
+
+urlpatterns = [
+    path('', include('calc.urls')),            //Here calc is the sub module app created by us . When some once lick base url it will open calc applications Eg: http://127.0.0.1:8000 . This will look into urls.py of calc sub app
+    path('swp', include('swebap.urls')),      //Here swebap is another sub module app created by us. When some one open http://127.0.0.1:8000/swp    It will open swebap.urls. It will look into urls.py of swebap sub app
+    path('admin/', admin.site.urls),        //To open default admin panel. Url is http://127.0.0.1:8000/admin    //To access this we need user and password. To add username and password : python manage.py createsuperuser
+]
+
+----------------------------
+
+Url of sub modules
+-------------------
+submodule also contains url and views mapping. Below is one of urls.py of sub module app
+
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+    path('', views.home, name='home'),              //Base url should go to view "home" method
+    path('profile/', views.profile, name='profile'),   //Path /profile should go to view "profile" method
+    path('home2/', views.home2, name='home2'),
+    path('home3/', views.home3, name='home3'),
+    path('home4/', views.home4, name='page4'),
+    path('addition/', views.addPage, name='add'),
+    path('addition/addResult', views.performAddition, name='addres'),
+    path('sign/', views.signPage, name='signinpage'),
+    path('sign/verify', views.dosign, name='dosignin')
+    ]
+
+---------------------------------
+
+To add html page
+----------------
+Create one folder in base project Eg: pages   
+Copy all html pages and paste in that folder Eg: in pages
+
+in settings.py in sub module of same base dir. config like below
+In TEMPLATES, give below
+
+'DIRS': [os.path.join(BASE_DIR, 'pages')],                //Add that folder here. For adding more folder Eg: 'DIRS': [os.path.join(BASE_DIR, 'pages'),os.path.join(BASE_DIR, 'spages')],
+
+
+---------------------------------
+
+Views
+------
+
+Below is some example of methods in views
+
+from django.shortcuts import render
+from django.http import HttpResponse
+
+def home(request):                               //Get request
+    return HttpResponse("Helloworld!")            //Response is only Helloworld!
+
+def profile(request):
+    mypage = "<h1>hello</h1><h2>boss</h2>"         //This is for giving html response
+    return HttpResponse(mypage)
+
+def home2(request):
+    return render(request, 'myhome2page.html')       //This is for giving html response from html file. The file should be in a folder which is mapped in BASE_DIR which is in settings
+
+def home3(request):
+    mname = "Rahul"
+    return render(request, 'myhome3page.html', {'name':mname})    //This for passing value to html page. HERE {{ name }} in html page will be replaced with Rahul. This is used for dynamic content in page
+
+def home4(request):
+    return render(request, 'mpage5.html')
+
+def addPage(request):
+    return render(request, 'addition.html')
+
+def performAddition(request):
+    var1 = int(request.GET["num1"])                         //This is for getting value from query param in http GET request
+    var2 = int(request.GET["num2"])
+    res = var1 + var2
+    return render(request, 'result.html', {'addresult':res})
+
+def signPage(request):
+    return render(request, 'signp.html')
+
+def dosign(request):
+    print("comming here")
+    email = request.POST['email']                               //This is for getting value from query param in http POST request
+    passd = request.POST['password']
+    signresult = "Not successfull"
+    if email == "hi123@gmail.com" and passd == "12345":
+        signresult = "Successfull"
+    print("result is:", signresult)
+    return render(request, 'signresult.html', {'signrest': signresult})
+
+
+-------------------------------
+
+HTML page for djandgo and uses
+------------------------------
+
+myhome2page.html
+-----------------
+<html>
+<head>
+	<title>home3page</title>
+</head
+<body>
+	<p>myhome3</p>
+	<h3>Welcome {{name}}</h3>                       //Here {{ name }} will be replaced with value from view method
+</body>
+</html>
+
+
+mypage3.html
+------------
+<!DOCTYPE html>
+<html>
+<head>
+	<title>title</title>
+</head>
+<body style="background:red">
+	<p style="color:blue">Hi how are you</p>
+	<div>
+		{% block content %}                                        //This block will be replaced with some other html page/html content who extends this page. This is like template which we can use in different page of the side.
+		{% endblock %}
+	</div>
+</body>
+</html>
+
+mpage5.html
+-------------
+{% extends 'mypage3.html' %}
+{% block content %}                                //Other content it will get from mypage3.html which is extended. In that page it will replace block contends with this content. But the view will call only this page. That is like template. This is actual content 
+<h4>Hello all</h4>
+{% endblock %}
+
+addition.html
+--------------
+<!DOCTYPE html>
+<html>
+<head>
+	<title>title</title>
+</head>
+<body style="background:red">
+<h4>Addition operation</h4>
+<form action="addResult">                                                     //While submitting this will call this url /addition. It will be send to any view
+	Enter first number:<input type="text" name="num1"/><br/>
+	Enter second number:<input type="text" name="num2"/><br/>
+	<input type="submit"/>
+</form>
+</body>
+</html>
+
+signp.html
+----------
+<!DOCTYPE html>
+<html>
+<head>
+	<title>title</title>
+</head>
+<body style="background:red">
+<h4>Addition operation</h4>
+<form action="verify" method="POST">                       //This will call url /verify. It will be mapped with some views
+	{% csrf_token %}                                           //We should use csrf_token in form tag in django                       
+	Email:<input type="text" name="email"/><br/>
+	Password:<input type="password" name="password"/><br/>
+	<input type="submit" value="SignIn"/>
+</form>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+------------------------------
+
+
+To check all python django command give below command
+-------------------------------------------------------
+
+python manage.py help
+
+
+--------------------------
+
+To add any files in base
+------------------------
+Create new folders Eg: pages   Eg: spages
+
+copy files to created folder which needs to access from base(or directly) Eg: index.html
+
+Go to settings and config like below
+
+'DIRS': [os.path.join(BASE_DIR, 'pages'),os.path.join(BASE_DIR, 'spages')],         // add that folders here
+
+
+
+now in view you can directly use file name
+
+def myhome(request):
+    return render(request, 'index.html')
+
+
+
+
+
+--------------------------
+To add all website related static files 
+---------------------------------------
+
+create new folder inside main project
+Eg: pagecontent
+
+Go to settings.py and add like below
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR,'pagecontent')                          //Give that folder name here
+    ]
+STATIC_ROOT = os.path.join(BASE_DIR,'webcontents')                 //Give in which folder it needs to copied after collectstatic command
+
+
+Run below command
+
+python manage.py collectstatic               //This will collect all static files in pagecontent and copy to webcontents
+
+//If any new changes is done. just add that in pagecontent and then again run collectstatic command
+
+
+To map that static files in html, In main page add below at start of that html page
+{% load static %}                                   //This is for loading all static pages of html content. 
+
+Change href and src like below
+Eg: src="{% static 'js/jquery.chili-2.2.js' %}"   // This is for using all that page. now that will be available in static           
+Eg: href="{% static 'templatemo_style.css' %}"
+
+-------------------------------------
+
+To use for loop in html page  //Here we are getting list and getting one by one                      in index.html
+----------------------------
+{% static "images" as imgfolder %}    //taking folder "images" from static as "imgfolder"
+...
+...
+     {% for prod in prods %}
+        <div class="box margin_r_20 box_border">
+            <h2>{{prod.name}}</h2>
+            <div class="box_image_wrapper">
+              <img src="{{imgfolder}}/{{prod.image}}" alt="product 1" />           //Here above example static not works. because here we have to get from object.
+            </div>
+            <p>{{prod.desc}}</p>       
+            <div class="cleaner_h10"></div>
+            <div class="button_01"><a href="#">More</a></div>
+        </div>
+     {% endfor %}
+
+
+in views              //This view is for above
+-------
+def indexpage(request):
+ prodone = Products()
+    prodone.name = "Chennai"
+    prodone.desc = "Chennai is the capital of tamilnadu. City with busy peope"
+    prodone.image = "image_1.jpeg"
+    prodone.musttry = False
+    
+    prodtwo = Products()
+    prodtwo.name = "Pondicherry"
+    prodtwo.desc = "City of enjoyment"
+    prodtwo.image = "image_2.jpeg"
+    prodtwo.musttry = False
+    
+    products = [prodone, prodtwo]
+    
+    return render(request, 'index.html', {'prods': products})
+
+-------------------------------------
+
+To use if statement       index.html
+-------------------
+
+.....
+    {% if prod.musttry %}
+                <h4 style="color: blue">MUST TRY...</h4>
+    {% endif %}
+...
+
+--------------------------------------
+
+{% static "images" as imgfolder %}                  // This is for using images in pages. We are passing images folder in name of imgfolder
+For using images. Add like below
+src="{{imgfolder}}/image_1.jpeg"                     //This is for using images
+
+
+------------------------------------
+
+To check which method:
+----------------------
+
+request.method  //This will give which method
+
+
+In if condition:
+
+if request.method == 'POST':                           //POST method will go here
+	------
+else:                                                    //Other method will go here etc: GET etc
+	-------
+
+
+--------------------------------------
+
+To create new user in default database:
+-------------------------------------
+
+from django.contrib.auth.models import User, auth
+
+def register(request):
+        firstName = request.POST['first_name']
+        lastName = request.POST['last_name']
+        userName = request.POST['user_name']
+        emailId = request.POST['email_id']
+        password = request.POST['pass']
+        user = User.objects.create_user(username=userName, password=password, email=emailId, first_name=firstName, last_name=lastName)   //To create User object with input data
+        user.save()                            //This is for adding user. This will add user in auth_user table of the project database
+        print("User Added successfully")
+        return render(request, 'signin.html')
+
+
+------------------------------------------
+
+
+to check user already exists or not
+-----------------------------------
+Eg:
+userName = 'Ram'
+User.objects.filter(username=userName).exists()             //This will return true if username already exists
+
+emailId = 'ram@gmail.com'
+User.objects.filter(email=emailId).exists()                  //This will return true if email is already exists
+
+Eg in if condition:
+if User.objects.filter(username=userName).exists() == False or User.objects.filter(email=emailId).exists() == False:  //If username or email are not exists this will create new user or else it wont create new user. It will display error message
+                user = User.objects.create_user(username=userName, password=password, email=emailId, first_name=firstName, last_name=lastName)
+                user.save()
+                print("User Added successfully")
+                return render(request, 'signin.html')
+            else:
+                print("User already exists")
+                messages.info(request, "User already exists")                     //error message in html page
+                return redirect('register')
+
+
+------------------------------------------
+
+Printing message from code to webpage
+------------------------------------
+
+
+messages.info(requst, "my message here")        //Add message here
+
+in html page:
+		{% for message in messages %}
+			<h4>{{message}}</h4>	
+		{% endfor %}
+
+
+Example:
+from django.contrib import messages
+
+def signin(request)
+	messages.info(request, "User already exists")           //Message here    //we can give messages.error etc
+        return redirect('register')
+
+register html page
+---------------
+<html>
+<body>
+----
+{% for message in messages %}
+			<h4>{{message}}</h4>	
+{% endfor %}
+-----
+</body>
+</html>
+
+
+--------------------------------------------
+
+To redirect to different url:
+-----------------------------
+from django.shortcuts import render, redirect
+
+def signin(request):
+	return redirect('accounts/sign')              //Give redirect url here
+
+def register(request);
+	return redirect('/')                    //this will redirect to base url
+
+-------------------------------------------
+
+
+To login
+--------
+
+userName = 'ram123'
+passwd = '12345'
+user = auth.authenticate(username=userName, password=passwd)        //This will give user
+auth.login(request, user)              //Login with that user
+
+
+Example:
+
+def sign(request):
+    print("Came here for signin")
+    if request.method == 'POST':
+        print("This is post request")
+        userName = request.POST['user_name']
+        passwd = request.POST['pass']
+        print("username:", userName, " password:", passwd)
+        user = auth.authenticate(username=userName, password=passwd)           //get user with given credential
+        if user is not None:
+            auth.login(request, user)                                          //login
+            print("sign in successfull")
+            return redirect('/swp')
+        else:
+            messages.info(request, "Invalid credential. Please give valid email and password")
+            print("invalid sign in")
+            return redirect('sign')
+    else:
+        print("This is Get request")
+        return render(request, 'signin.html')
+
+
+
+-------------------------------
+
+logout
+-------
+
+auth.logout(request)               //Used to logout
+    
+
+Example:
+from django.contrib.auth.models import User, auth
+...
+def signout(request):
+    print("Came here for signout")
+    auth.logout(request)
+    print("auth signout done")
+    return redirect('/swp')
+
+
+--------------------------------
+
+displaying user name in html if user is loged in:
+-------------------------------------------------
+
+<html>
+<body>
+{% if user.is_authenticated %}                     //This will return true if user logged in
+<h1>Hi {{ user.first_name }}</h1>                 //This will return first_name from auth_user  table
+{% else %}
+<h2>User not loged in</h2>
+{% endif %}
+</body>
+</html>
+
+Example:
+
+<html>
+<body>
+.....
+	    {% if user.is_authenticated %}
+            <li><a href="#" target="_blank"><span></span>Hello {{ user.first_name }}</a></li>
+            <li><a href="accounts/signout" target="_blank"><span></span>Logout</a></li>
+            {% else %}
+            <li><a href="accounts/register" target="_blank"><span></span>Register</a></li>
+	    <li><a href="accounts/sign" target="_blank"><span></span>Login</a></li>    
+            {% endif %}
+</body>
+</html>
+
+
+-------------------------
+
+django with postgressql
+-----------------------
+
+pip install psycopg2      //needed to access postgres from django
+
+pip install Pillow            //This is also required to access postgres from django
+
+
+-----------------------------
+
+DB configuration in settings.py
+-------------------------------
+
+// add DB credentials like below
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'firstweb',
+        'USER': 'postgres',
+        'PASSWORD': 'rob123',
+        'HOST': 'localhost'
+    }
+}
+
+
+//Add sub application like below. 
+
+INSTALLED_APPS = [
+    'swebap.apps.SwebapConfig',    //This needs to be added. here my sub app name is swebapp
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+]
+
+Database migration:
+-------------------
+
+python manage.py makemigrations           //now the migration file will be created under migrations folder inside sub module
+
+python manage.py sqlmigrate sub_module_name migration_file_name
+Eg: python manage.py sqlmigrate swebap 0001 
+
+python manage.py migrate        //Now table will be created in db
+
+-------------------------------------
+
+
+
+
+To create super user admin
+-------------------------
+
+python manage.py createsuperuser
+
+//Give user name, email and password
+
+
+http://localhost:8000/admin
+
+-------------------------------------
+
+
+To add model class/data access in admin pannel. (data will be added in db)
+---------------------------------
+
+
+Go to admin.py
+
+Add model like below code
+
+from .models import Destination          //Destination is our class which is in model and Destination is also extented from Model
+
+admin.site.register(Destination)
+
+
+// Now from admin panel you can add data of the class //this can be added in db
+
+
+Example in model:
+from django.db import models
+
+# Create your models here.
+
+class Products(models.Model):
+    name = models.CharField(max_length=200)        //max length
+    desc = models.TextField()                      
+    image = models.ImageField(upload_to='pics')     //In which directory the image should be saved
+    musttry = models.BooleanField(default=False)     //Default is false
+
+
+in views:
+def indexpage(request):     
+products = Products.objects.all()        //To get from db
+return render(request, 'index.html', {'prods': products})
+
+Based on the above configurtain. Table will be created in Database while migration
+
+
+now  go to below url
+http://localhost:8000/admin
+
+you can find products. click add products
+Now you can add products using admin pannel. 
+Used below url, then only image will work
+
+------------------------------------
+
+
+
+To add new url Example for adding media file from app:
+--------------------------------------
+
+Go to settings.py and add below lines
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+Then go to base urls.py and add below lines
+
+urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+in class in model you should give like below
+
+Eg:
+image = models.ImageField(upload_to='pics')
+
+
+-------------------------------------------
+
+
+
+
+
